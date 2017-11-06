@@ -47,4 +47,4 @@ const component = () => {
 
 
 document.body.appendChild(component());
-document.body.appendChild(fetchData());
+document.onload = fetchData();
