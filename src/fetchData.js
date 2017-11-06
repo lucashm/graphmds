@@ -2,8 +2,8 @@ import axios from 'axios';
 
 let mdsRepositories = [];
 let mdsStudents = [];
-let repoCounter = "";
-const config = { "lucasssm": "62915f793505d677297bba8eb0935243d6624da4" } ;
+let actualRepoName = "";
+const config = { "lucasssm": "62915f793505d677297bba8eb0935243d6624da4" };
 
 export default function fetchMdsRepositories() {
 
@@ -13,9 +13,9 @@ export default function fetchMdsRepositories() {
       console.log(mdsRepositories);
       fetchMdsStudents();
     } else {
-      for (let j = 0; j < response.data.length; j++)
+      for (let j = 0; j < response.data.length; j++) {
         mdsRepositories.push(response.data[j].full_name);
-
+      }
       asyncfetchRepositories((i + 1), callback);
     }
 
@@ -37,19 +37,24 @@ const asyncfetchRepositories = (i, callback) => {
 
 
 const fetchMdsStudents = () => {
-  for (let repo in mdsRepositories) {
-    repoCounter = mdsRepositories[repo];
-    asyncfetchMdsStudents(repoCounter);
+  const callback = (repoCounter) => {
+    if (repoCounter === mdsRepositories.length) {
+      console.log(mdsStudents);
+    } else {
+      asyncfetchMdsStudents(repoCounter, callback);
+    }
   }
+  asyncfetchMdsStudents(1, callback);
+
 }
 
-const asyncfetchMdsStudents = (repoCounter) => {
-  axios.get(`https://api.github.com/repos/${repoCounter}/contributors`, config)
+const asyncfetchMdsStudents = (repoCounter, callback) => {
+  axios.get(`https://api.github.com/repos/${mdsRepositories[repoCounter]}/contributors`, config)
     .then(function (response) {
       for (let z = 0; z < response.data.length; z++) {
         mdsStudents.push(response.data[z].login);
       }
-      console.log(mdsStudents);
+      callback(repoCounter + 1);
     })
     .catch(function (error) {
       console.log(error);
