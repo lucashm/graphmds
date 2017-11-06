@@ -2,7 +2,6 @@ import _ from 'lodash';
 import './style.css';
 import Vis from '../node_modules/vis/dist/vis.js';
 import fetchData from './fetchData.js';
-import CreateEvent from './creating.js';
 // import '../node_modules/vis/dist/vis.css';
 
 const component = () => {
