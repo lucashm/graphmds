@@ -1,25 +1,42 @@
 import _ from 'lodash';
 import './style.css';
 import Vis from '../node_modules/vis/dist/vis.js';
-import fetchData from './fetchData.js';
+import { asyncFetchUsers, mdsStudents, repositories, associations } from './fetchData.js';
 // import '../node_modules/vis/dist/vis.css';
 
 const component = () => {
   let element = document.createElement('div');
   element.id = "maindiv";
-  let nodes = new Vis.DataSet([
-    {id: 1, label: 'Node 1'},
-    {id: 2, label: 'Node 2'},
-    {id: 3, label: 'Node 3'},
-    {id: 4, label: 'Node 4'},
-    {id: 5, label: 'Node 5'}
-  ]);
+  let studentsObjects = [];
+  let reposObjects = [];
+  let associationsObjects = [];
+
+  for (let user in mdsStudents) {
+    studentsObjects.push({ id: mdsStudents[user].id, shape: 'circularImage', label: mdsStudents[user].name, image: mdsStudents[user].avatar_url })
+  }
+  console.log("WOOOOO");
+  console.log(studentsObjects);
+
+  for (let repo in repositories) {
+    reposObjects.push({ id: (repositories[repo].id + mdsStudents.length), label: repositories[repo].name, shape: 'diamond' })
+  }
+  console.log("WOOOOO");
+  console.log(reposObjects);
+
+  let allNodes = studentsObjects.concat(reposObjects);
+
+  let nodes = new Vis.DataSet(allNodes);
+
+
+  for (let association in associations){
+    associationsObjects.push({ from: associations[association].user_id, to: (associations[association].repository_id + mdsStudents.length) })
+  }
+  console.log("ASSOCIAÇÕES AAAAAAAAAAAAAAAA")
+  console.log(associationsObjects);
 
   let edges = new Vis.DataSet([
-    {from: 1, to: 3},
     {from: 1, to: 2},
-    {from: 2, to: 4},
-    {from: 2, to: 5}
+    {from: 1, to: 3}
   ]);
 
   let container = document.getElementById('mynetwork');
@@ -29,7 +46,7 @@ const component = () => {
     edges: edges
   }
 
-  let options = { nodes: {color: 'red'} };
+  let options = { nodes: { color: 'red' }, layout : { improvedLayout: false } };
 
 
   const network = new Vis.Network(container, data, options);
@@ -44,6 +61,10 @@ const component = () => {
   return element;
 }
 
+const callback = () => {
+  let mainComponent = component();
+  document.body.appendChild(mainComponent);
+}
 
-document.body.appendChild(component());
-document.onload = fetchData();
+document.onload = asyncFetchUsers(callback);
+
