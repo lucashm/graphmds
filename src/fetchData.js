@@ -10,18 +10,6 @@ export function asyncFetchUsers(callback) {
     .then(function (response) {
       console.log(response.data);
       mdsStudents = response.data;
-      asyncFetchRepos(callback);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-}
-
-const asyncFetchRepos = (callback) => {
-  axios.get("http://localhost:3000/repositories")
-    .then(function (response) {
-      console.log(response.data);
-      repositories = response.data;
       asyncFetchAssociations(callback);
     })
     .catch(function (error) {
@@ -30,7 +18,7 @@ const asyncFetchRepos = (callback) => {
 }
 
 export const asyncFetchAssociations = (callback) => {
-  axios.get("http://localhost:3000/associations")
+  axios.get("http://localhost:3000/association_with_users")
   .then(function (response) {
     console.log(response.data);
     associations = response.data;

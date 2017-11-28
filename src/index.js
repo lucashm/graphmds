@@ -17,27 +17,17 @@ const component = () => {
   console.log("WOOOOO");
   console.log(studentsObjects);
 
-  for (let repo in repositories) {
-    reposObjects.push({ id: (repositories[repo].id + mdsStudents.length), label: repositories[repo].name, shape: 'diamond' })
-  }
-  console.log("WOOOOO");
-  console.log(reposObjects);
 
-  let allNodes = studentsObjects.concat(reposObjects);
-
-  let nodes = new Vis.DataSet(allNodes);
+  let nodes = new Vis.DataSet(studentsObjects);
 
 
   for (let association in associations){
-    associationsObjects.push({ from: associations[association].user_id, to: (associations[association].repository_id + mdsStudents.length) })
+    associationsObjects.push({ from: associations[association].user_one_id, to: (associations[association].user_two_id) })
   }
   console.log("ASSOCIAÇÕES AAAAAAAAAAAAAAAA")
   console.log(associationsObjects);
 
-  let edges = new Vis.DataSet([
-    {from: 1, to: 2},
-    {from: 1, to: 3}
-  ]);
+  let edges = new Vis.DataSet(associationsObjects);
 
   let container = document.getElementById('mynetwork');
 
