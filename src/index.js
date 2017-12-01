@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import './style.css';
+import axios from 'axios';
 import Vis from '../node_modules/vis/dist/vis.js';
 import { asyncFetchUsers, mdsStudents, repositories, associations } from './fetchData.js';
 // import '../node_modules/vis/dist/vis.css';
@@ -7,6 +8,9 @@ import { asyncFetchUsers, mdsStudents, repositories, associations } from './fetc
 let pointOne = 0;
 let pointTwo = 0;
 let actualPoint = 0;
+let nodes;
+let edges;
+export let data;
 
 const component = () => {
   let element = document.createElement('div');
@@ -22,7 +26,7 @@ const component = () => {
   console.log(studentsObjects);
 
 
-  let nodes = new Vis.DataSet(studentsObjects);
+  nodes = new Vis.DataSet(studentsObjects);
 
 
   for (let association in associations) {
@@ -31,11 +35,11 @@ const component = () => {
   console.log("ASSOCIAÇÕES AAAAAAAAAAAAAAAA")
   console.log(associationsObjects);
 
-  let edges = new Vis.DataSet(associationsObjects);
+  edges = new Vis.DataSet(associationsObjects);
 
   let container = document.getElementById('mynetwork');
 
-  let data = {
+  data = {
     nodes: nodes,
     edges: edges
   }
@@ -44,7 +48,7 @@ const component = () => {
 
   // these are all options in full.
   let options = {
-    nodes: { color: 'red' }, layout: { improvedLayout: false },
+    layout: { improvedLayout: false },
     physics: {
       enabled: true,
       barnesHut: {
@@ -62,20 +66,6 @@ const component = () => {
         springLength: 100,
         damping: 0.4,
         avoidOverlap: 0
-      },
-      repulsion: {
-        centralGravity: 0.2,
-        springLength: 200,
-        springConstant: 0.05,
-        nodeDistance: 100,
-        damping: 0.09
-      },
-      hierarchicalRepulsion: {
-        centralGravity: 0.0,
-        springLength: 100,
-        springConstant: 0.01,
-        nodeDistance: 120,
-        damping: 0.09
       },
       maxVelocity: 50,
       minVelocity: 0.1,
@@ -119,12 +109,17 @@ const callback = () => {
   buttonTwo.innerHTML = "Assign to \"to\"";
   buttonTwo.onclick = () => onClickEvent(2);
 
+  let goButton = document.createElement("button");
+  goButton.innerHTML = "Find!"
+  goButton.onclick = () => asyncGetPath();
+
   let selectComponent = document.createElement("div");
   selectComponent.id = "selectDiv";
   selectComponent.innerHTML = '<p> from: ' + pointOne + ' to: ' + pointTwo
   document.body.appendChild(selectComponent);
   document.body.appendChild(buttonOne);
   document.body.appendChild(buttonTwo);
+  document.body.appendChild(goButton);
 }
 
 document.onload = asyncFetchUsers(callback);
@@ -138,4 +133,21 @@ const onClickEvent = (selector) => {
     pointTwo = actualPoint;
   }
   selectComponent.innerHTML = '<p> from: ' + pointOne + ' to: ' + pointTwo
+}
+
+
+const asyncGetPath = () => {
+  axios.post("http://localhost:3000/shortest_path", { "user_one_id": pointOne, "user_two_id": pointTwo })
+    .then(function (response) {
+      console.log(response.data);
+      markPath(response.data);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+
+const markPath = (newData) => {
+  localStorage.setItem("data", JSON.stringify(newData));
+  window.open("http://localhost:8080/another.html");
 }

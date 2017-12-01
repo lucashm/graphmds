@@ -3,7 +3,8 @@ const path = require('path');
 module.exports = {
   entry: {
     app: './src/index.js',
-    fetchData: './src/fetchData.js'
+    fetchData: './src/fetchData.js',
+    anotherNetwork : './src/another.js'
   },
   output: {
     filename: '[name].bundle.js',
