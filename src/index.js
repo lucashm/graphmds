@@ -137,7 +137,7 @@ const onClickEvent = (selector) => {
 
 
 const asyncGetPath = () => {
-  axios.post("http://localhost:3000/shortest_path", { "user_one_id": pointOne, "user_two_id": pointTwo })
+  axios.post("http://localhost:3000/dijkstra", { "user_one_id": pointOne, "user_two_id": pointTwo })
     .then(function (response) {
       console.log(response.data);
       markPath(response.data);
